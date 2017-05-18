@@ -4,12 +4,14 @@ if [ -z "$ref" ]; then
 ref=mm10
 fi
 
+# setting up the environment 
 java=/opt/jdk1.8.0_72/bin/java
 samtools=/usr/bin/samtools
 java=/etc/alternatives/jre_1.8.0/bin/java
 
+#
 if [ -z "$email" ]; then
-email=bil022@ucsd.edu
+email=shz254@ucsd.edu
 fi
 
 echo $ref $email

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+BIN=$(dirname $0)
 if [ -z "$ref" ]; then
 ref=mm10
 fi
@@ -54,10 +55,7 @@ function vars {
   # compgen -A variable | awk '{if(n)print}/^_$/{n++}'
 }
 
-function loadavg {
-  while [ `cat /proc/loadavg | awk '{print int($1)}'` -gt 40 ]; do sleep 600; date; done;
-}
-
+# map fastq to the genome, and filter reads. 
 for FASTQ_GZ_FILE_1 in $*; do vars;
   if [ -s ${RAW_BAM_FILE_MAPSTATS} ]; then
     echo "pass 1 ${RAW_BAM_FILE_MAPSTATS}"
@@ -66,9 +64,7 @@ for FASTQ_GZ_FILE_1 in $*; do vars;
   echo ${RAW_BAM_FILE_MAPSTATS}
   echo "$OFPREFIX::"; set | grep $OFPREFIX; echo
   touch ${RAW_BAM_FILE_MAPSTATS}
-  loadavg
 
-  ( 
   echo "bwa aln -q 5 -l 32 -k 2 -t ${NTHREADS} ${BWA_INDEX_NAME} ${FASTQ_GZ_FILE_1} > ${SAI_FILE_1}"
   bwa aln -q 5 -l 32 -k 2 -t ${NTHREADS} ${BWA_INDEX_NAME} <(bzcat ${FASTQ_GZ_FILE_1}) > ${SAI_FILE_1}
   bwa samse ${BWA_INDEX_NAME} ${SAI_FILE_1} <(bzcat ${FASTQ_GZ_FILE_1}) | $samtools view -Su - | $samtools sort - ${RAW_BAM_PREFIX}
@@ -78,11 +74,9 @@ for FASTQ_GZ_FILE_1 in $*; do vars;
   echo "$samtools view -F 1804 -q ${MAPQ_THRESH} -b ${RAW_BAM_FILE} > ${TMP_FILT_BAM_FILE}"
   $samtools view -F 1804 -q ${MAPQ_THRESH} -b ${RAW_BAM_FILE} > ${TMP_FILT_BAM_FILE}
   $samtools flagstat ${TMP_FILT_BAM_FILE} > ${TMP_FILT_BAM_FILE%%bam}qc
-  ) & sleep 90
 done
 
-wait
-
+### mark duplicates. 
 for FASTQ_GZ_FILE_1 in $*; do vars
   if [ -s ${DUP_FILE_QC} ]; then
     echo "pass 2 ${DUP_FILE_QC}"
@@ -93,12 +87,10 @@ for FASTQ_GZ_FILE_1 in $*; do vars
   touch ${DUP_FILE_QC}
  
   echo "$java -Xmx4G -jar ${MARKDUP} TMP_DIR=`pwd`/tmp INPUT=${TMP_FILT_BAM_FILE} OUTPUT=${FILT_BAM_FILE} METRICS_FILE=${DUP_FILE_QC} VALIDATION_STRINGENCY=LENIENT ASSUME_SORTED=true REMOVE_DUPLICATES=false"
-  ( $java -Xmx4G -jar ${MARKDUP} TMP_DIR=`pwd`/tmp INPUT=${TMP_FILT_BAM_FILE} OUTPUT=${FILT_BAM_FILE} METRICS_FILE=${DUP_FILE_QC} VALIDATION_STRINGENCY=LENIENT ASSUME_SORTED=true REMOVE_DUPLICATES=false ) & sleep 90
-  loadavg
+   $java -Xmx4G -jar ${MARKDUP} TMP_DIR=`pwd`/tmp INPUT=${TMP_FILT_BAM_FILE} OUTPUT=${FILT_BAM_FILE} METRICS_FILE=${DUP_FILE_QC} VALIDATION_STRINGENCY=LENIENT ASSUME_SORTED=true REMOVE_DUPLICATES=false 
 done
 
-wait
-
+## remove duplicates and produce final bam file. 
 for FASTQ_GZ_FILE_1 in $*; do vars
   if [ -s ${PBC_FILE_QC} ]; then
     echo "pass 3 ${PBC_FILE_QC}"
@@ -107,9 +99,7 @@ for FASTQ_GZ_FILE_1 in $*; do vars
   echo ${PBC_FILE_QC}
   echo "$OFPREFIX::"; set | grep $OFPREFIX; echo
   touch ${PBC_FILE_QC}
-  loadavg
 
-  (
   $samtools view -F 1804 -b ${FILT_BAM_FILE} > ${FINAL_BAM_FILE}
   # Index Final BAM file
   $samtools index ${FINAL_BAM_FILE} ${FINAL_BAM_INDEX_FILE}
@@ -117,11 +107,13 @@ for FASTQ_GZ_FILE_1 in $*; do vars
   echo "bedtools bamtobed -i ${FILT_BAM_FILE} | awk 'BEGIN{OFS=\"\t\"}{print $1,$2,$3,$6}' | grep -v 'chrM' | sort -T . | uniq -c | awk 'BEGIN{mt=0;m0=0;m1=0;m2=0} ($1==1){m1=m1+1} ($1==2){m2=m2+1} {m0=m0+1} {mt=mt+$1} END{printf \"%d\t%d\t%d\t%d\t%f\t%f\t%f\n\",mt,m0,m1,m2,m0/mt,m1/m0,m1/m2}' > ${PBC_FILE_QC}"
   bedtools bamtobed -i ${FILT_BAM_FILE} | awk 'BEGIN{OFS="\t"}{print $1,$2,$3,$6}' | grep -v 'chrM' | sort -T . | uniq -c | awk 'BEGIN{mt=0;m0=0;m1=0;m2=0} ($1==1){m1=m1+1} ($1==2){m2=m2+1} {m0=m0+1} {mt=mt+$1} END{printf "%d\t%d\t%d\t%d\t%f\t%f\t%f\n",mt,m0,m1,m2,m0/mt,m1/m0,m1/m2}' > ${PBC_FILE_QC}
   # rm ${FILT_BAM_FILE}
-  ) & sleep 90
 done
-wait
+
 
 export PATH=/mnt/silencer2/share/phantompeakqualtools/:/usr/local/bin/:/mnt/silencer2/share/ENCODE/bin:$PATH
+
+## calculate phantom score. 
+
 for FASTQ_GZ_FILE_1 in $*; do vars
   if [ -e ${CC_SCORES_FILE}.flag ]; then
     echo "pass 4 ${CC_SCORES_FILE}"
@@ -130,9 +122,7 @@ for FASTQ_GZ_FILE_1 in $*; do vars
   echo ${CC_SCORES_FILE}
   echo "$OFPREFIX::"; set | grep $OFPREFIX; echo
   echo $FASTQ_GZ_FILE_1 > ${CC_SCORES_FILE}.flag
-  loadavg
 
-  (
   if ! [ -e ${FINAL_TA_FILE} ]; then
     bedtools bamtobed -i ${FINAL_BAM_FILE} | awk 'BEGIN{OFS="\t"}{$4="N";$5="1000";print $0}' | gzip -c > ${FINAL_TA_FILE}
   fi
@@ -145,12 +135,11 @@ for FASTQ_GZ_FILE_1 in $*; do vars
   Rscript /mnt/silencer2/share/phantompeakqualtools/run_spp_nodups.R -c=${SUBSAMPLED_TA_FILE} -p=${NTHREADS} -filtchr=chrM -savp=${CC_PLOT_FILE} -out=${CC_SCORES_FILE} -tmpdir=.
   sed -r 's/,[^\t]+//g' ${CC_SCORES_FILE} > temp
   mv temp ${CC_SCORES_FILE}
-  ) & sleep 90
 done
-wait
 
 #rm ${TMP_FILT_BAM_FILE} ${RAW_BAM_FILE} ${FILT_BAM_FILE} ${FINAL_BAM_FILE}
 
+## convert bam files to bigwig files. 
 m=`ls *.filt.nodup.srt.bam 2>/dev/null|wc -l`
 if [ $m -ne 0 ]; then
 for FASTQ_GZ_FILE_1 in $*; do vars
@@ -165,27 +154,28 @@ for bam in $OFPREFIX*.filt.nodup.srt.bam; do
     $samtools view -H $bam | awk '$1 == "@SQ" {OFS="\t";print $2,$3}' - | sed 's/.N://g' > $gs;
     $samtools view -b $bam | bedtools bamtobed | bedtools slop -s -l 0 -r $ext_len -i stdin -g $gs |
       bedtools genomecov -g $gs -i stdin -bg | wigToBigWig stdin $gs $bw; rm $gs
-    loadavg
   else
     echo Find $bw, skip
   fi
 done
+
 done
 fi
-wait
 
 #rm *.fastq.gz.filt.srt.*bam
 # rm ${TMP_FILT_BAM_FILE} ${RAW_BAM_FILE} ${FILT_BAM_FILE} ${FINAL_BAM_FILE}
 
+## last step
+
 (echo | ../format.pl
 for FASTQ_GZ_FILE_1 in $*; do vars
-  grep . $OFPREFIX*.qc | ../format.pl | grep -v fract_mapped
+  grep . $OFPREFIX*.qc | $BIN/format.pl | grep -v fract_mapped
 done) > qc.txt
 
 echo "done ${OFPREFIX}"
 
-if [[ -t 1 ]]; then
-  ../format.sh
-else
-  ../format.sh | mail -s "QC done" $email
-fi
+#if [[ -t 1 ]]; then
+#  $BIN/format.sh
+#else
+#  $BIN/format.sh | mail -s "QC done" $email
+#fi

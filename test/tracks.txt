@@ -1,1 +1,0 @@
-track type=bigWig name="test.filt.nodup.srt.bw" description="test.filt.nodup.srt.bw" bigDataUrl=http://enhancer.sdsc.edu/yanxiazh/ENCODE/0519/test.filt.nodup.srt.bw visibility=full

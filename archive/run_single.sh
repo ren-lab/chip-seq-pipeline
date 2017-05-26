@@ -65,13 +65,11 @@ for FASTQ_GZ_FILE_1 in $*; do vars;
   echo "$OFPREFIX::"; set | grep $OFPREFIX; echo
   touch ${RAW_BAM_FILE_MAPSTATS}
 
-  echo "bwa aln -q 5 -l 32 -k 2 -t ${NTHREADS} ${BWA_INDEX_NAME} ${FASTQ_GZ_FILE_1} > ${SAI_FILE_1}"
   bwa aln -q 5 -l 32 -k 2 -t ${NTHREADS} ${BWA_INDEX_NAME} <(bzcat ${FASTQ_GZ_FILE_1}) > ${SAI_FILE_1}
   bwa samse ${BWA_INDEX_NAME} ${SAI_FILE_1} <(bzcat ${FASTQ_GZ_FILE_1}) | $samtools view -Su - | $samtools sort - ${RAW_BAM_PREFIX}
   rm ${SAI_FILE_1}
   $samtools flagstat ${RAW_BAM_FILE} > ${RAW_BAM_FILE_MAPSTATS}
   
-  echo "$samtools view -F 1804 -q ${MAPQ_THRESH} -b ${RAW_BAM_FILE} > ${TMP_FILT_BAM_FILE}"
   $samtools view -F 1804 -q ${MAPQ_THRESH} -b ${RAW_BAM_FILE} > ${TMP_FILT_BAM_FILE}
   $samtools flagstat ${TMP_FILT_BAM_FILE} > ${TMP_FILT_BAM_FILE%%bam}qc
 done
@@ -86,7 +84,6 @@ for FASTQ_GZ_FILE_1 in $*; do vars
   echo "$OFPREFIX::"; set | grep $OFPREFIX; echo
   touch ${DUP_FILE_QC}
  
-  echo "$java -Xmx4G -jar ${MARKDUP} TMP_DIR=`pwd`/tmp INPUT=${TMP_FILT_BAM_FILE} OUTPUT=${FILT_BAM_FILE} METRICS_FILE=${DUP_FILE_QC} VALIDATION_STRINGENCY=LENIENT ASSUME_SORTED=true REMOVE_DUPLICATES=false"
    $java -Xmx4G -jar ${MARKDUP} TMP_DIR=`pwd`/tmp INPUT=${TMP_FILT_BAM_FILE} OUTPUT=${FILT_BAM_FILE} METRICS_FILE=${DUP_FILE_QC} VALIDATION_STRINGENCY=LENIENT ASSUME_SORTED=true REMOVE_DUPLICATES=false 
 done
 
@@ -104,7 +101,6 @@ for FASTQ_GZ_FILE_1 in $*; do vars
   # Index Final BAM file
   $samtools index ${FINAL_BAM_FILE} ${FINAL_BAM_INDEX_FILE}
   $samtools flagstat ${FINAL_BAM_FILE} > ${FINAL_BAM_FILE_MAPSTATS}
-  echo "bedtools bamtobed -i ${FILT_BAM_FILE} | awk 'BEGIN{OFS=\"\t\"}{print $1,$2,$3,$6}' | grep -v 'chrM' | sort -T . | uniq -c | awk 'BEGIN{mt=0;m0=0;m1=0;m2=0} ($1==1){m1=m1+1} ($1==2){m2=m2+1} {m0=m0+1} {mt=mt+$1} END{printf \"%d\t%d\t%d\t%d\t%f\t%f\t%f\n\",mt,m0,m1,m2,m0/mt,m1/m0,m1/m2}' > ${PBC_FILE_QC}"
   bedtools bamtobed -i ${FILT_BAM_FILE} | awk 'BEGIN{OFS="\t"}{print $1,$2,$3,$6}' | grep -v 'chrM' | sort -T . | uniq -c | awk 'BEGIN{mt=0;m0=0;m1=0;m2=0} ($1==1){m1=m1+1} ($1==2){m2=m2+1} {m0=m0+1} {mt=mt+$1} END{printf "%d\t%d\t%d\t%d\t%f\t%f\t%f\n",mt,m0,m1,m2,m0/mt,m1/m0,m1/m2}' > ${PBC_FILE_QC}
   # rm ${FILT_BAM_FILE}
 done

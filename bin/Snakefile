@@ -56,7 +56,7 @@ rule bwa_map:
 rule bam_markdup:
     input:
         bam = "bam/{sample}.filt.srt.bam",
-        qc = "qc/{sample}.filt.qc"
+        qc = "qc/{sample}.filt.flagstat.qc"
     output:
         bam = temp("bam/{sample}.dupmark.bam"),
         qc = "qc/{sample}.dup.flagstat.qc"
@@ -69,7 +69,7 @@ rule bam_markdup:
 rule bam_finalize:
     input:
         bam = "bam/{sample}.dupmark.bam",
-        qc = "qc/{sample}.dup.qc"
+        qc = "qc/{sample}.dup.flagstat.qc"
     output:
         bam = protected("bam/{sample}.filt.nodup.srt.bam"),
         stat = "qc/{sample}.filt.nodup.srt.flagstat.qc",

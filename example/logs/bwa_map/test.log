@@ -1,0 +1,8 @@
+[bwa_read_seq] 0.0% bases are trimmed.
+[bwa_aln_core] convert to sequence coordinate... 13.46 sec
+[bwa_aln_core] refine gapped alignments... 2.18 sec
+[bwa_aln_core] print alignments... 1.01 sec
+[bwa_aln_core] 250000 sequences have been processed.
+[main] Version: 0.7.12-r1039
+[main] CMD: bwa samse /mnt/silencer2/share/bwa_indices/hg19.fa bam/test.raw.sai /dev/fd/63
+[main] Real time: 24.832 sec; CPU: 21.240 sec

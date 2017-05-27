@@ -14,10 +14,10 @@ All the output files will be relative to your project directory.
 1. bam/[name].filt.nodup.srt.bam: the final bam files after filter, duplicate removal, and sort. 
 2. bigWig/[name].filt.nodup.srt.bw: bigWig file for the bam.
 3. qc: summary statistics for the bam files.
-  1. \*.flagstat.qc: summary stats for different steps of bam files.
-  2. [name].\*.cc.qc: phantom peak summary.
-  3. [name].\*.pbc.qc: PBC summary. 
-  4. [name].\*.plot.pdf: tag shift size estimate plot.
+    1. \*.flagstat.qc: summary stats for different steps of bam files.
+    2. [name].\*.cc.qc: phantom peak summary.
+    3. [name].\*.pbc.qc: PBC summary. 
+    4. [name].\*.plot.pdf: tag shift size estimate plot.
 4. logs/: running logs for different parts of the pipeline
 
 

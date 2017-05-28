@@ -1,18 +1,18 @@
-[Fri May 26 16:39:37 PDT 2017] picard.sam.markduplicates.MarkDuplicates INPUT=[bam/test.filt.srt.bam] OUTPUT=bam/test.dupmark.bam METRICS_FILE=qc/test.dup.flagstat.qc REMOVE_DUPLICATES=false ASSUME_SORTED=true TMP_DIR=[tmp] VALIDATION_STRINGENCY=LENIENT    MAX_SEQUENCES_FOR_DISK_READ_ENDS_MAP=50000 MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=8000 SORTING_COLLECTION_SIZE_RATIO=0.25 REMOVE_SEQUENCING_DUPLICATES=false TAGGING_POLICY=DontTag DUPLICATE_SCORING_STRATEGY=SUM_OF_BASE_QUALITIES PROGRAM_RECORD_ID=MarkDuplicates PROGRAM_GROUP_NAME=MarkDuplicates READ_NAME_REGEX=<optimized capture of last three ':' separated fields as numeric values> OPTICAL_DUPLICATE_PIXEL_DISTANCE=100 VERBOSITY=INFO QUIET=false COMPRESSION_LEVEL=5 MAX_RECORDS_IN_RAM=500000 CREATE_INDEX=false CREATE_MD5_FILE=false GA4GH_CLIENT_SECRETS=client_secrets.json
-[Fri May 26 16:39:37 PDT 2017] Executing as yanxiazh@silencer.sdsc.edu on Linux 3.10.0-514.16.1.el7.x86_64 amd64; OpenJDK 64-Bit Server VM 1.8.0_121-b13; Picard version: 2.1.0(25ebc07f7fbaa7c1a4a8e6c130c88c1d10681802_1454776546) IntelDeflater
-INFO	2017-05-26 16:39:38	MarkDuplicates	Start of doWork freeMemory: 2046042736; totalMemory: 2058354688; maxMemory: 3817865216
-INFO	2017-05-26 16:39:38	MarkDuplicates	Reading input file and constructing read end information.
-INFO	2017-05-26 16:39:38	MarkDuplicates	Will retain up to 14684096 data points before spilling to disk.
-INFO	2017-05-26 16:39:43	MarkDuplicates	Read 210336 records. 0 pairs never matched.
-INFO	2017-05-26 16:39:44	MarkDuplicates	After buildSortedReadEndLists freeMemory: 1913814456; totalMemory: 2058354688; maxMemory: 3817865216
-INFO	2017-05-26 16:39:44	MarkDuplicates	Will retain up to 119308288 duplicate indices before spilling to disk.
-INFO	2017-05-26 16:39:47	MarkDuplicates	Traversing read pair information and detecting duplicates.
-INFO	2017-05-26 16:39:47	MarkDuplicates	Traversing fragment information and detecting duplicates.
-INFO	2017-05-26 16:39:47	MarkDuplicates	Sorting list of duplicate records.
-INFO	2017-05-26 16:39:47	MarkDuplicates	After generateDuplicateIndexes freeMemory: 1619432336; totalMemory: 2595749888; maxMemory: 3817865216
-INFO	2017-05-26 16:39:47	MarkDuplicates	Marking 4570 records as duplicates.
-INFO	2017-05-26 16:39:47	MarkDuplicates	Found 0 optical duplicate clusters.
-INFO	2017-05-26 16:39:53	MarkDuplicates	Before output close freeMemory: 2573475800; totalMemory: 2595749888; maxMemory: 3817865216
-INFO	2017-05-26 16:39:53	MarkDuplicates	After output close freeMemory: 2573541272; totalMemory: 2595749888; maxMemory: 3817865216
-[Fri May 26 16:39:53 PDT 2017] picard.sam.markduplicates.MarkDuplicates done. Elapsed time: 0.28 minutes.
-Runtime.totalMemory()=2595749888
+[Sat May 27 20:26:43 PDT 2017] net.sf.picard.sam.MarkDuplicates INPUT=bam/test.filt.srt.bam OUTPUT=bam/test.dupmark.bam METRICS_FILE=qc/test.dup.flagstat.qc REMOVE_DUPLICATES=false ASSUME_SORTED=true TMP_DIR=tmp VALIDATION_STRINGENCY=LENIENT    MAX_SEQUENCES_FOR_DISK_READ_ENDS_MAP=50000 MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=8000 SORTING_COLLECTION_SIZE_RATIO=0.25 READ_NAME_REGEX=[a-zA-Z0-9]+:[0-9]:([0-9]+):([0-9]+):([0-9]+).* OPTICAL_DUPLICATE_PIXEL_DISTANCE=100 VERBOSITY=INFO QUIET=false COMPRESSION_LEVEL=5 MAX_RECORDS_IN_RAM=500000 CREATE_INDEX=false CREATE_MD5_FILE=false
+[Sat May 27 20:26:43 PDT 2017] Executing as shz254@tscc-2-53.sdsc.edu on Linux 2.6.32-642.13.1.el6.x86_64 amd64; OpenJDK 64-Bit Server VM 1.8.0_31-b13
+INFO	2017-05-27 20:26:43	MarkDuplicates	Start of doWork freeMemory: 2018410184; totalMemory: 2030043136; maxMemory: 3817865216
+INFO	2017-05-27 20:26:43	MarkDuplicates	Reading input file and constructing read end information.
+INFO	2017-05-27 20:26:43	MarkDuplicates	Will retain up to 15150258 data points before spilling to disk.
+INFO	2017-05-27 20:26:50	MarkDuplicates	Read 210336 records. 0 pairs never matched.
+INFO	2017-05-27 20:26:52	MarkDuplicates	After buildSortedReadEndLists freeMemory: 1885449216; totalMemory: 2030043136; maxMemory: 3817865216
+INFO	2017-05-27 20:26:52	MarkDuplicates	Will retain up to 119308288 duplicate indices before spilling to disk.
+INFO	2017-05-27 20:26:52	MarkDuplicates	Traversing read pair information and detecting duplicates.
+INFO	2017-05-27 20:26:52	MarkDuplicates	Traversing fragment information and detecting duplicates.
+INFO	2017-05-27 20:26:53	MarkDuplicates	Sorting list of duplicate records.
+INFO	2017-05-27 20:26:53	MarkDuplicates	After generateDuplicateIndexes freeMemory: 1064359544; totalMemory: 2030043136; maxMemory: 3817865216
+INFO	2017-05-27 20:26:53	MarkDuplicates	Marking 4570 records as duplicates.
+INFO	2017-05-27 20:26:53	MarkDuplicates	Found 0 optical duplicate clusters.
+INFO	2017-05-27 20:26:56	MarkDuplicates	Before output close freeMemory: 2018534696; totalMemory: 2030043136; maxMemory: 3817865216
+INFO	2017-05-27 20:26:56	MarkDuplicates	After output close freeMemory: 2018605864; totalMemory: 2030043136; maxMemory: 3817865216
+[Sat May 27 20:26:56 PDT 2017] net.sf.picard.sam.MarkDuplicates done. Elapsed time: 0.22 minutes.
+Runtime.totalMemory()=2030043136

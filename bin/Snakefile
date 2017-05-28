@@ -72,7 +72,7 @@ rule bam_finalize:
         bam = "bam/{sample}.dupmark.bam",
         qc = "qc/{sample}.dup.flagstat.qc"
     output:
-        bam = protected("bam/{sample}.filt.nodup.srt.bam"),
+        bam = "bam/{sample}.filt.nodup.srt.bam",
         stat = "qc/{sample}.filt.nodup.srt.flagstat.qc",
         pbc = "qc/{sample}.filt.nodup.srt.pbc.qc"
     threads: 1

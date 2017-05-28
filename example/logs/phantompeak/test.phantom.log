@@ -1,13 +1,3 @@
-Loading required package: ggplot2
-Loading required package: data.table
-Loading required package: reshape2
-
-Attaching package: ‘reshape2’
-
-The following objects are masked from ‘package:data.table’:
-
-    dcast, melt
-
 ################
 ChIP data: test.filt.nodup.sample.15.0.SE.tagAlign.gz 
 Control data: NA 
@@ -30,8 +20,10 @@ Overwrite files?: TRUE
 
 Decompressing ChIP file
 Loading required package: caTools
+Warning message:
+package ‘caTools’ was built under R version 3.2.3 
 Reading ChIP tagAlign/BAM file test.filt.nodup.sample.15.0.SE.tagAlign.gz 
-opened tmp/test.filt.nodup.sample.15.0.SE.tagAlign59d95ba9b221
+opened tmp/test.filt.nodup.sample.15.0.SE.tagAlign6886cf247f4
 done. read 205689 fragments
 ChIP data read length 51 
 [1] TRUE

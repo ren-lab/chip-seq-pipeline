@@ -55,17 +55,15 @@ if [ $server == "silencer" ]; then
   Your results are saved in: 
   $(pwd)"  | mail -s "ChIP-seq analysis Done" -a $LOG  $email
 
-elif [ $server -eq TSCC ]; then 
+elif [ $server == "TSCC" ]; then 
   unset PYTHONPATH
   source /home/shz254/py34env/bin/activate
   if [ ! -d pbslog ]; then mkdir pbslog; fi
     echo "$(date) # Analysis Began" > $LOG
-
-  snakemake --snakefile ${DIR}/Snakefile -p  -k -j 1000 --cluster \
-  --config GENOME=$genome BWA_INDEX_PATH=/oasis/tscc/scratch/bil022/HiC/ref/
-  "qsub -l nodes=1:ppn={threads} -N {rule} -M $email -q hotel 
-  -o pbslog/{rule}.pbs.out -e pbslog/{rule}.pbs.err" \
-  --jobscript ${DIR}/scripts/jobscript.pbs --jobname "{rulename}.{jobid}.pbs" 
+  snakemake --snakefile ${DIR}/Snakefile -p  -k -j 1000 \
+  --config GENOME=$genome BWA_INDEX_PATH=/oasis/tscc/scratch/bil022/HiC/ref/ \
+  --cluster "qsub -l nodes=1:ppn={threads} -N {rule} -q hotel -o pbslog/{rule}.pbs.out -e pbslog/{rule}.pbs.err" \
+  --jobscript ${DIR}/../scripts/jobscript.pbs --jobname "{rulename}.{jobid}.pbs" \
   2> >(tee -a $LOG >&2)
   echo "$(date) # Analysis finished" >> $LOG
   echo "See attachment for the running log. 

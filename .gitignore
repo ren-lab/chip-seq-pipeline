@@ -2,3 +2,5 @@
 *.swp
 test/*
 example/.snakemake/*
+example/*.log
+example/pbslog/*

@@ -6,23 +6,24 @@
 import glob
 import re
 
+BASE_DIR = workflow.basedir + "/../"
 
 ## find the samples in the fastq directory. 
 fastqs = glob.glob("fastq/*.fastq*")
 SAMPLES = [re.sub("fastq/(.+).fastq.*$","\\1",a) for a in fastqs]
 print("Found samples:")
 print(SAMPLES)
-#[ print(sample) for sample in SAMPLES ]
+## dependent programs
+MARKDUP=BASE_DIR+"dependencies/MarkDuplicates.jar"
+PHANTOMPEAKTOOL = BASE_DIR + "dependencies/run_spp_nodups.R"
+WIG2BIGWIG=BASE_DIR + "dependencies/wigToBigWig"
 
 ## global variables
 GENOME = config["GENOME"]
-#EMAIL = config["EMAIL"]
-BWA_INDEX_NAME = "/mnt/silencer2/share/bwa_indices/"+GENOME+".fa"
+BWA_INDEX_NAME = config["BWA_INDEX_PATH"]+GENOME+ ".fa"
+#BWA_INDEX_NAME = "/mnt/silencer2/share/bwa_indices/"+GENOME+".fa"
 MAPQ_THRESH = "30"
-MARKDUP="/mnt/silencer2/share/picard-tools-2.1.0/picard.jar MarkDuplicates"
 NREADS= "15000000"
-PHANTOMPEAKTOOL = "/mnt/silencer2/share/phantompeakqualtools/run_spp_nodups.R"
-WIG2BIGWIG="/mnt/silencer2/share/ENCODE/bin/wigToBigWig"
 
 rule vanilla:
     input: 
@@ -115,7 +116,6 @@ rule bam2bw:
         bw = "bigWig/{sample}.filt.nodup.srt.bw"
     threads: 1
     shell:
-        #"test=$(wc -l qc/test.raw.qc);echo $test;"
         "ext_len=$(awk '{{print $10;exit}}' <(samtools view {input})|"
         "awk '{{print 300-length}}');"
         "samtools view -H {input} | awk '$1 == \"@SQ\" {{OFS=\"\\t\";print $2,$3}}' - | sed 's/.N://g' > {output.gs};"

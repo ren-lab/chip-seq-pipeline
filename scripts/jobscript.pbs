@@ -8,6 +8,7 @@
 # properties = {properties}
 module load biotools
 module load R
+module load python
 module switch samtools/1.2 samtools/1.3
 unset PYTHONPATH
 source /home/shz254/py34env/bin/activate

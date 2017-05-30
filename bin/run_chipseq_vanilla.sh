@@ -7,6 +7,9 @@
 
 function usage(){
 echo -e "Usage: $0 -g genome -e E-mail -s server"
+echo -e "\t-g [genome]: hg19, mm10, etc."
+echo -e "\t-e [email]: email address."
+echo -e "\t-s [server]: silencer or TSCC"
 exit 1
 }
 
@@ -56,6 +59,7 @@ if [ $server == "silencer" ]; then
   $(pwd)"  | mail -s "ChIP-seq analysis Done" -a $LOG  $email
 
 elif [ $server == "TSCC" ]; then 
+  module load python
   unset PYTHONPATH
   source /home/shz254/py34env/bin/activate
   if [ ! -d pbslog ]; then mkdir pbslog; fi

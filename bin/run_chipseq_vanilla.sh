@@ -66,7 +66,7 @@ elif [ $server == "TSCC" ]; then
     echo "$(date) # Analysis Began" > $LOG
   snakemake --snakefile ${DIR}/Snakefile -p  -k -j 1000 \
   --config GENOME=$genome BWA_INDEX_PATH=/oasis/tscc/scratch/bil022/HiC/ref/ \
-  --cluster "qsub -l nodes=1:ppn={threads} -N {rule} -q hotel -o pbslog/{rule}.pbs.out -e pbslog/{rule}.pbs.err" \
+  --cluster "qsub -l nodes=1:ppn={threads} -N {rule} -q hotel -o pbslog/{wildcards.sample}.{rule}.pbs.out -e pbslog/{wildcards.sample}.{rule}.pbs.err" \
   --jobscript ${DIR}/../scripts/jobscript.pbs --jobname "{rulename}.{jobid}.pbs" \
   2> >(tee -a $LOG >&2)
   echo "$(date) # Analysis finished" >> $LOG

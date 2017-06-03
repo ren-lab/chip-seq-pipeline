@@ -41,7 +41,7 @@ if [ -z ${server+x} ];
 
 
 
-NTHREADS=12
+NTHREADS=30
 DIR=$(dirname $0)
 LOG=run-$(date +%Y-%m-%d-%H-%M-%S).log
 ## validate the programs are installed.

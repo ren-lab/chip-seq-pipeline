@@ -49,7 +49,7 @@ rule bwa_map:
         " > {output.sai} 2> {log};"
         "bwa samse {BWA_INDEX_NAME} {output.sai} <(bzcat {input}) 2> {log}|"
         "samtools view -@ {threads} -Su - |"
-        "samtools sort -@ {threads} - -T {wildcards.sample} -o {output.raw};"
+        "samtools sort -@ {threads} -m 4G - -T {wildcards.sample} -o {output.raw};"
         "samtools flagstat {output.raw} > {output.raw_qc};"
         "samtools view -@ {threads} -F 1804 -q {MAPQ_THRESH} -b {output.raw} > {output.filt};"
         "samtools flagstat {output.filt} > {output.filt_qc}"

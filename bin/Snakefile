@@ -11,6 +11,7 @@ BASE_DIR = workflow.basedir + "/../"
 ## find the samples in the fastq directory. 
 fastqs = glob.glob("fastq/*.fastq*")
 SAMPLES = [re.sub("fastq/(.+).fastq.*$","\\1",a) for a in fastqs]
+FASTQ_DICT = dict(zip(SAMPLES,fastqs))
 print("Found samples:")
 print(SAMPLES)
 ## dependent programs
@@ -34,7 +35,8 @@ rule vanilla:
 
 rule bwa_map:
     input: 
-        "fastq/{sample}.fastq.bz2"
+        lambda wildcards: FASTQ_DICT[wildcards.sample]
+        #"fastq/{sample}.fastq.bz2"
     output:
         raw = temp ("bam/{sample}.raw.srt.bam"),
         filt = temp("bam/{sample}.filt.srt.bam"),
@@ -45,9 +47,11 @@ rule bwa_map:
         "logs/bwa_map/{sample}.log"
     threads: 6
     shell:
-        "bwa aln -q 5 -l 32 -k 2 -t {threads} {BWA_INDEX_NAME} <( bzcat {input} )"
-        " > {output.sai} 2> {log};"
-        "bwa samse {BWA_INDEX_NAME} {output.sai} <(bzcat {input}) 2> {log}|"
+       # "bwa aln -q 5 -l 32 -k 2 -t {threads} {BWA_INDEX_NAME} <( bzcat {input} )"
+       # " > {output.sai} 2> {log};"
+       # "bwa samse {BWA_INDEX_NAME} {output.sai} <(bzcat {input}) 2>> {log}|"
+        "bash {BASE_DIR}/bin/bwa_aln_fmt_autodetect.sh {threads} {BWA_INDEX_NAME} {input}"
+        " {output.sai} {log}|"
         "samtools view -@ {threads} -Su - |"
         "samtools sort -@ {threads} -m 4G - -T {wildcards.sample} -o {output.raw};"
         "samtools flagstat {output.raw} > {output.raw_qc};"

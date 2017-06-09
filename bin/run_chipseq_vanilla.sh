@@ -56,12 +56,12 @@ if [ $server == "silencer" ]; then
   snakemake -p -k --ri --snakefile ${DIR}/Snakefile --cores $NTHREADS \
   --config GENOME=$genome BWA_INDEX_PATH=/mnt/silencer2/share/bwa_indices/ \
   2> >(tee -a $LOG >&2) 
-  status=$?
   echo "$status"
   echo "$(date) # Analysis finished" >> $LOG
+  [[ $email =~ @ ]] && (
   echo "See attachment for the running log. 
   Your results are saved in: 
-  $(pwd)"  | mail -s "ChIP-seq analysis Done" -a $LOG  $email
+  $(pwd)"  | mail -s "ChIP-seq analysis Done" -a $LOG  $email )
 
 elif [ $server == "TSCC" ]; then 
   module load python
@@ -75,9 +75,11 @@ elif [ $server == "TSCC" ]; then
   --jobscript ${DIR}/../scripts/jobscript.pbs --jobname "{rulename}.{jobid}.pbs" \
   2> >(tee -a $LOG >&2)
   echo "$(date) # Analysis finished" >> $LOG
+  [[ $email =~ @ ]] && (
   echo "See attachment for the running log. 
   Your results are saved in: 
-  $(pwd)"  | mail -s "ChIP-seq analysis Done" -a $LOG  $email
+  $(pwd)"  | mail -s "ChIP-seq analysis Done" -a $LOG  $email 
+  )
 else 
   echo -e "Invalide server option: $server"; exit 1; 
 fi

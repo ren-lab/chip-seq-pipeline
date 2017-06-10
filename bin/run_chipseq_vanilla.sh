@@ -39,10 +39,6 @@ if [ -z ${genome+x} ]; then
 if [ -z ${server+x} ]; 
   then echo -e "Please tell us the server, eg. silencer, TSCC"; usage;exit; fi
 
-### unlock the directory
-touch Snakefile
-snakemake --unlock 
-rm Snakefile
 
 NTHREADS=30
 DIR=$(dirname $0)
@@ -52,6 +48,11 @@ LOG=run-$(date +%Y-%m-%d-%H-%M-%S).log
 ## load snakemake environment for Renlab
 if [ $server == "silencer" ]; then
   source /mnt/silencer2/share/Piplines/environments/python3env/bin/activate
+  ### unlock the directory
+  touch Snakefile
+  snakemake --unlock 
+  rm Snakefile
+  ## started analysis
   echo "$(date) # Analysis Began" > $LOG
   snakemake -p -k --ri --snakefile ${DIR}/Snakefile --cores $NTHREADS \
   --config GENOME=$genome BWA_INDEX_PATH=/mnt/silencer2/share/bwa_indices/ \
@@ -67,6 +68,11 @@ elif [ $server == "TSCC" ]; then
   module load python
   unset PYTHONPATH
   source /home/shz254/py34env/bin/activate
+  ### unlock the directory
+  touch Snakefile
+  snakemake --unlock
+  rm Snakefile
+  ## started analysis
   if [ ! -d pbslog ]; then mkdir pbslog; fi
     echo "$(date) # Analysis Began" > $LOG
   snakemake --snakefile ${DIR}/Snakefile -p  -k -j 1000 --ri \

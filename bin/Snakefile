@@ -28,9 +28,9 @@ NREADS= "15000000"
 
 rule vanilla:
     input: 
-#        expand("bigWig/{sample}.filt.nodup.srt.bw", sample=SAMPLES),
+        expand("bigWig/{sample}.filt.nodup.srt.bw", sample=SAMPLES),
         expand("bam/{sample}.filt.nodup.srt.bam", sample=SAMPLES),
-#        expand("qc/{sample}.filt.nodup.sample."+str(int(NREADS)/1000000)+".SE.tagAlign.gz.cc.qc",sample=SAMPLES)
+        expand("qc/{sample}.filt.nodup.sample."+str(int(NREADS)/1000000)+".SE.tagAlign.gz.cc.qc",sample=SAMPLES)
 
 
 rule bwa_map:

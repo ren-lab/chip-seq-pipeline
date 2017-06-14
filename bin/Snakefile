@@ -67,9 +67,9 @@ rule bam_markdup:
         qc = "qc/{sample}.dup.flagstat.qc"
     log: 
         "logs/markdup/{sample}.markdup.log"
-    threads: 1
+    threads: 2
     shell: 
-        "java -Xmx4G -XX:ParallelGCThreads=4 -XX:ConcGCThreads=1 -jar {MARKDUP} TMP_DIR=tmp/{wildcards.sample} INPUT={input.bam} OUTPUT={output.bam} METRICS_FILE={output.qc} VALIDATION_STRINGENCY=LENIENT ASSUME_SORTED=true REMOVE_DUPLICATES=false 2> {log}"
+        "java -Xmx8G -jar {MARKDUP} TMP_DIR=tmp/{wildcards.sample} INPUT={input.bam} OUTPUT={output.bam} METRICS_FILE={output.qc} VALIDATION_STRINGENCY=LENIENT ASSUME_SORTED=true REMOVE_DUPLICATES=false 2> {log}"
 
 rule bam_finalize:
     input:

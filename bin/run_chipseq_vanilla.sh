@@ -54,7 +54,7 @@ if [ $server == "silencer" ]; then
   rm Snakefile
   ## started analysis
   echo "$(date) # Analysis Began" > $LOG
-  snakemake -p -k --ri --snakefile ${DIR}/Snakefile --cores $NTHREADS \
+  nice -n 19 snakemake -p -k --ri --snakefile ${DIR}/Snakefile --cores $NTHREADS \
   --config GENOME=$genome BWA_INDEX_PATH=/mnt/silencer2/share/bwa_indices/ \
   2> >(tee -a $LOG >&2) 
   echo "$status"

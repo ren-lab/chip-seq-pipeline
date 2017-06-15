@@ -5,3 +5,4 @@ example/.snakemake/*
 example/*.log
 example/pbslog/*
 example/logs/*
+dependencies/picard.jar

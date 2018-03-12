@@ -30,8 +30,8 @@ rule vanilla:
     input: 
         expand("bigWig/{sample}.filt.nodup.srt.bw", sample=SAMPLES),
         expand("bam/{sample}.filt.nodup.srt.bam", sample=SAMPLES),
-        expand("qc/{sample}.filt.nodup.sample."+str(int(NREADS)/1000000)+".SE.tagAlign.gz.cc.qc",sample=SAMPLES)
-
+        expand("qc/{sample}.filt.nodup.sample."+str(int(NREADS)/1000000)+".SE.tagAlign.gz.cc.qc",sample=SAMPLES),
+        "all_sample.qc.txt"
 
 rule bwa_map:
     input: 
@@ -131,12 +131,36 @@ rule bam2bw:
 #rule clean: 
 #    """ cleaning up temperory files """
 
-#rule lastqc:
-#    input:
-#        expand("qc/{sample}.qc",sample=SAMPLES)
-#    output:
-#        "qc/qc.txt"
-#    threads: 1
-#    shell:
-#        "echo done"
+rule lastqc:
+    input:
+        raw = expand("qc/{sample}.raw.flagstat.qc",sample=SAMPLES),
+        dup = expand("qc/{sample}.dup.flagstat.qc",sample=SAMPLES)
+    output:
+        "all_sample.qc.txt"
+    threads: 1
+    run:
+      out = open(output[0],'w')
+      out.write("\t".join(["Sample","Total","Mapped","Filtered","Uniq","Map%","Dup%"])+"\n")
+      for idx in range(len(input.raw)):
+        sample = re.match(r"qc\/(.*).raw.flagstat.qc",input.raw[idx]).groups()[0]
+        raw_file = open(input.raw[idx], 'r')
+        for line in raw_file:
+          words = line.strip().split(' ')
+          if len(words)>5:
+            if words[4] == "total":
+              total = words[0]
+            elif words[3] == "mapped":
+              mapped = words[0]
+        raw_file.close()
+        dup_file = open(input.dup[idx],'r')
+        for line in dup_file:
+          words = line.strip().split('\t')
+          if words[0] == "Unknown Library":
+            filt = words[1]
+            duplicates = words[5]
+            nodup = str(int(filt)-int(duplicates))
+        map_p = "%.2f"%(float(mapped)/float(total))
+        dup_p = "%.2f"%(float(duplicates)/float(mapped))
+        out.write("\t".join([sample,total,mapped,filt,nodup,map_p,dup_p])+"\n")
+
         

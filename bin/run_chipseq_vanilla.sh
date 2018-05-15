@@ -79,7 +79,7 @@ if [ $server == "silencer" ]; then
 elif [ $server == "TSCC" ]; then 
   module load python
   unset PYTHONPATH
-  source /home/shz254/py34env/bin/activate
+  source /projects/ps-renlab/share/Pipelines/environments/python3env_TSCC/bin/activate
   ### unlock the directory
   touch Snakefile
   snakemake --unlock

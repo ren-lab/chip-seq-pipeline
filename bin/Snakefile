@@ -133,16 +133,16 @@ rule bam2bw:
 
 rule lastqc:
     input:
-        raw = expand("qc/{sample}.raw.flagstat.qc",sample=SAMPLES),
-        dup = expand("qc/{sample}.dup.flagstat.qc",sample=SAMPLES)
+        raw = expand("qc/{samples}.raw.flagstat.qc",samples=SAMPLES),
+        dup = expand("qc/{samples}.dup.flagstat.qc",samples=SAMPLES)
     output:
-        "all_sample.qc.txt"
+        "{sample}.qc.txt"
     threads: 1
     run:
       out = open(output[0],'w')
       out.write("\t".join(["Sample","Total","Mapped","Filtered","Uniq","Map%","Dup%"])+"\n")
       for idx in range(len(input.raw)):
-        sample = re.match(r"qc\/(.*).raw.flagstat.qc",input.raw[idx]).groups()[0]
+        samples = re.match(r"qc\/(.*).raw.flagstat.qc",input.raw[idx]).groups()[0]
         raw_file = open(input.raw[idx], 'r')
         for line in raw_file:
           words = line.strip().split(' ')
@@ -161,6 +161,6 @@ rule lastqc:
             nodup = str(int(filt)-int(duplicates))
         map_p = "%.2f"%(float(mapped)/float(total))
         dup_p = "%.2f"%(float(duplicates)/float(mapped))
-        out.write("\t".join([sample,total,mapped,filt,nodup,map_p,dup_p])+"\n")
+        out.write("\t".join([samples,total,mapped,filt,nodup,map_p,dup_p])+"\n")
 
         

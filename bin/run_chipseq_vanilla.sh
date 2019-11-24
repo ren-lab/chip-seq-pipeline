@@ -67,7 +67,7 @@ if [ $server == "silencer" ]; then
   ## started analysis
   echo "$(date) # Analysis Began" > $LOG
   nice -n 19 snakemake -p -k --ri --snakefile ${DIR}/Snakefile --cores $NTHREADS \
-  --config GENOME=$genome BWA_INDEX_PATH=/mnt/silencer2/share/bwa_indices/ \
+  --config GENOME=$genome BWA_INDEX_PATH=/projects/ps-renlab/share/bwa_indices/ \
   2> >(tee -a $LOG >&2) 
   echo "$status"
   echo "$(date) # Analysis finished" >> $LOG
@@ -88,7 +88,7 @@ elif [ $server == "TSCC" ]; then
   if [ ! -d pbslog ]; then mkdir pbslog; fi
     echo "$(date) # Analysis Began" > $LOG
   snakemake --snakefile ${DIR}/Snakefile -p  -k -j 1000 --ri \
-  --config GENOME=$genome BWA_INDEX_PATH=/oasis/tscc/scratch/bil022/HiC/ref/ \
+  --config GENOME=$genome BWA_INDEX_PATH=/projects/ps-renlab/share/bwa_indices/ \
   --cluster "qsub -l nodes=1:ppn={threads} -N {rule} -q hotel -o pbslog/{wildcards.sample}.{rule}.pbs.out -e pbslog/{wildcards.sample}.{rule}.pbs.err" \
   --jobscript ${DIR}/../scripts/jobscript.pbs --jobname "{rulename}.{jobid}.pbs" \
   2> >(tee -a $LOG >&2)

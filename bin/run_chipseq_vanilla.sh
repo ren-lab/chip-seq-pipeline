@@ -77,7 +77,7 @@ if [ $server == "silencer" ]; then
   $(pwd)"  | mail -s "ChIP-seq analysis Done" -a $LOG  $email )
 
 elif [ $server == "TSCC" ]; then 
-  module load python
+#  module load python
   unset PYTHONPATH
   source /projects/ps-renlab/share/Pipelines/environments/python3env_TSCC/bin/activate
   ### unlock the directory

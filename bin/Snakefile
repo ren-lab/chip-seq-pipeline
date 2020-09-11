@@ -23,12 +23,12 @@ WIG2BIGWIG=BASE_DIR + "dependencies/wigToBigWig"
 GENOME = config["GENOME"]
 BWA_INDEX_NAME = config["BWA_INDEX_PATH"]+GENOME+ ".fa"
 #BWA_INDEX_NAME = "/mnt/silencer2/share/bwa_indices/"+GENOME+".fa"
-MAPQ_THRESH = "30"
+MAPQ_THRESH = "0"
 NREADS= "15000000"
 
 rule vanilla:
     input: 
-        expand("bigWig/{sample}.filt.nodup.srt.bw", sample=SAMPLES),
+        expand("bigWig/{sample}.nodup.bw", sample=SAMPLES),
         expand("bam/{sample}.filt.nodup.srt.bam", sample=SAMPLES),
         expand("qc/{sample}.filt.nodup.sample."+str(int(NREADS)/1000000)+".SE.tagAlign.gz.cc.qc",sample=SAMPLES),
         "all_sample.qc.txt"
@@ -116,17 +116,12 @@ rule bam2bw:
     input: 
         "bam/{sample}.filt.nodup.srt.bam"
     output:
-        gs = temp("bigWig/{sample}.filt.nodup.srt.gs"),
-        bw = "bigWig/{sample}.filt.nodup.srt.bw"
-    threads: 1
+        bw = "bigWig/{sample}.nodup.bw"
+    threads: 4
     shell:
-        "ext_len=$(awk '{{print $10;exit}}' <(samtools view {input})|"
-        "awk '{{print 300-length}}');"
-        "samtools view -H {input} | awk '$1 == \"@SQ\" {{OFS=\"\\t\";print $2,$3}}' - | sed 's/.N://g' > {output.gs};"
-        "samtools view -b {input} | bedtools bamtobed |"
-        "bedtools slop -s -l 0 -r $ext_len -i stdin -g {output.gs} |"
-        "bedtools genomecov -g {output.gs} -i stdin -bg |"
-        "{WIG2BIGWIG} stdin {output.gs} {output.bw}"
+      "bamCoverage -b {input} -o {output.bw} --outFileFormat bigwig "
+      "-bs 50 --numberOfProcessors {threads} --normalizeUsing RPKM"
+
 
 #rule clean: 
 #    """ cleaning up temperory files """
